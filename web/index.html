@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Student Profile Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .form-container {
+      width: 400px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+       
+    .form-container h2 {
+      text-align: center;
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 28px;
+      margin-bottom: 25px;
+    }
+    .form-container label {
+      display: block;
+      margin-top: 20px;
+      color: #555;
+      font-weight: bold;
+    }
+    label.required::after {
+      content: " *";
+      color: red;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    .form-container input[type="text"],
+    .form-container input[type="email"],
+    .form-container textarea
+     {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      box-sizing: border-box;
+    }
+    
+    .form-container select{
+        width: 100%;
+        padding: 12px 40px 12px 12px;
+        margin-top: 4px;
+        box-sizing: border-box;
+    }
+    
+    .form-container input[type="submit"] {
+      margin-top: 15px;
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .form-container input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+
+    #hobbies-container .hobby-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    
+    #hobbies-container .hobby-field input[type="text"] {
+      flex: 1;
+    }
+    #hobbies-container .btn-remove {
+        width: 36px;
+        height: 36px;
+        padding: 6px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        border: 1px solid #cc0000;
+        background-color: #ff4d4d;
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    #hobbies-container .btn-remove:hover {
+        background-color: #e60000;
+    }
+
+    .hobbies-label-container .btn-add {
+        width: 36px;
+        height: 36px;
+        padding: 6px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        border: 1px solid #28a745;
+        background-color: #4CAF50;
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .hobbies-label-container .btn-add:hover {
+        background-color: #218838;
+    }
+    .hobbies-label-container {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .hobbies-label-container label{
+        display: flex;
+        margin-top: 0px;
+        color: #555;
+        font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Personal Profile</h2>
+
+    <form method="POST" action="ProfileServlet">
+      <label for="name" class="required">Name:</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="studentId" class="required">Student ID:</label>
+      <input type="text" id="studentId" name="studentId" required>
+
+      <label for="program" class="required">Program:</label>
+      <select id="program" name="program" required>
+        <option value="">-- Select Program --</option>
+        <option value="Diploma">Diploma</option>
+        <option value="Degree">Degree</option>
+        <option value="Master">Master</option>
+        <option value="PhD">PhD</option>
+      </select>
+
+      <label for="email" class="required">Email:</label>
+      <input type="email" id="email" name="email" required>
+
+      <div class="hobbies-label-container">
+        <label class="required">Hobbies:</label>
+        <button type="button" class="btn-add">+</button>
+      </div>
+
+      <div id="hobbies-container">
+        <div class="hobby-field">
+          <input type="text" name="hobbies[]" placeholder="Enter a hobby" required>
+          <button type="button" class="btn-remove">-</button>
+        </div>
+      </div>
+
+      <label for="bio" class="required">Self-Introduction:</label>
+      <textarea id="bio" name="bio" rows="4" required></textarea>
+
+      <input type="submit" value="Submit Profile">
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const container = document.getElementById('hobbies-container');
+      const addButton = document.querySelector('.btn-add');
+
+      function updateRemoveButtons() {
+        const fields = container.querySelectorAll('.hobby-field');
+        fields.forEach(field => {
+          let removeBtn = field.querySelector('.btn-remove');
+          if (fields.length > 1) {
+            if (!removeBtn) {
+              removeBtn = document.createElement('button');
+              removeBtn.type = 'button';
+              removeBtn.className = 'btn-remove';
+              removeBtn.textContent = '-';
+              field.appendChild(removeBtn);
+            }
+          } else {
+            if (removeBtn) removeBtn.remove();
+          }
+        });
+      }
+
+      addButton.addEventListener('click', function() {
+        const newField = document.createElement('div');
+        newField.className = 'hobby-field';
+        newField.innerHTML = '<input type="text" name="hobbies[]" placeholder="Enter a hobby" required>';
+        container.appendChild(newField);
+        updateRemoveButtons();
+      });
+
+      container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-remove')) {
+          const field = e.target.closest('.hobby-field');
+          if (field) {
+            container.removeChild(field);
+            updateRemoveButtons();
+          }
+        }
+      });
+
+      updateRemoveButtons();
+    });
+  </script>
+</body>
+</html>
